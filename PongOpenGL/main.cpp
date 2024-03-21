@@ -7,11 +7,12 @@
 
 //Example2_4.cpp : A bouncing ball
 
-#include <GLUT/glut.h>//configuracion Para MacOS usando Xcode
+#include <GLUT/glut.h>//configuracion Para MacOS usando Xcode agregar opengl y glut a las Build Phases en xcode
 //#include <windows.h> //the windows include file, required by all windows applications
 //#include <GL/glut.h> //the glut file for windows operations
                      // it also includes gl.h and glu.h for the openGL library calls
 #include <math.h>
+#include <string>
 
 #define PI 3.1415926535898
 
@@ -36,6 +37,53 @@ GLfloat T[16] = {1.,0.,0.,0.,\
 
 #define PI 3.1415926535898
 GLint circle_points = 100;
+float rectX = 5.0f; // Posición inicial en X del rectángulo
+float rectY = 50.0f; // Posición inicial en Y del rectángulo
+
+
+
+void drawRectangle(GLint x, GLint y) {
+    glColor3f(1.0f, 1.0f, 1.0f); // Color blanco
+    glBegin(GL_QUADS);
+    glVertex2f(rectX, rectY);
+    glVertex2f(rectX + 2.0f, rectY);
+    glVertex2f(rectX + 2.0f, rectY + 12.0f);
+    glVertex2f(rectX, rectY + 12.0f);
+    glEnd();
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'w': // Mover hacia arriba
+            rectY += 10.0f;
+            break;
+        case 's': // Mover hacia abajo
+            rectY -= 10.0f;
+            break;
+        default:
+            break;
+    }
+    glutPostRedisplay();
+}
+
+void specialKeyboard(int key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_UP: // Flecha hacia arriba
+            rectY += 10.0f;
+            break;
+        case GLUT_KEY_DOWN: // Flecha hacia abajo
+            rectY -= 10.0f;
+            break;
+        case GLUT_KEY_RIGHT: // Flecha hacia la derecha
+            rectX += 10.0f;
+            break;
+        default:
+            break;
+    }
+    glutPostRedisplay();
+}
+
+
 void MyCircle2f(GLfloat centerx, GLfloat centery, GLfloat radius){
   GLint i;
   GLdouble angle;
@@ -50,10 +98,53 @@ void MyCircle2f(GLfloat centerx, GLfloat centery, GLfloat radius){
 GLfloat RadiusOfBall = 15.;
 // Draw the ball, centered at the origin
 void draw_ball() {
-  glColor3f(0.6,0.3,0.);
-  MyCircle2f(0.,0.,RadiusOfBall);
+  glColor3f(0.0,1.0,0.0);
+  MyCircle2f(0.,0.,5.0);
   
 }
+
+void drawScore(GLint scorep1,GLint scorep2){
+    glColor3f(1.0f, 1.0f, 1.0f); // Establecer el color a blanco
+    glRasterPos2f(1.0, 115.0); // Establecer la posición inicial del texto
+    std::string text = std::string("P1: ") + std::to_string(scorep1);
+    const char *texts = text.c_str();
+    for (const char *c = texts; *c != '\0'; c++) {
+      glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    }
+    glRasterPos2f(150.0, 115.0); // Establecer la posición inicial del texto
+    std::string text2 = std::string("P2: ") + std::to_string(scorep2);
+    const char *textss = text2.c_str();
+    for (const char *c = textss; *c != '\0'; c++) {
+      glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    }
+    glFlush(); // Asegurarse de que se renderice
+      
+}
+
+void drawFixedText() {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0.0, 160.0, 0.0, 120.0); // Keep our logical coordinate system constant
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+    drawScore(3,5);
+    drawRectangle(rectX,rectY);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    
+
+    
+    //glClear(GL_COLOR_BUFFER_BIT);
+    //drawRectangle();
+    //glFlush();
+    
+}
+
+
 
 void Display(void)
 {
@@ -126,11 +217,15 @@ void Display(void)
   glMultMatrixf(T1);
   
   draw_ball();
+
   glutPostRedisplay();
 
-  
+  drawFixedText();
 
 }
+
+
+
 
 
 void reshape (int w, int h)
@@ -150,11 +245,13 @@ void reshape (int w, int h)
 
 void init(void){
   //set the clear color to be white
-  glClearColor(0.0,0.8,0.0,1.0);
+  glClearColor(0.0,0.0,0.0,0.0);
   // initial position set to 0,0
   xpos = 60; ypos = RadiusOfBall; xdir = 1; ydir = 1;
   sx = 1.; sy = 1.; squash = 0.9;
   rot = 0;
+    
+  
 
 }
 
@@ -164,11 +261,13 @@ int main(int argc, char* argv[])
 
   glutInit( & argc, argv );
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize (320, 240);
+  glutInitWindowSize (1500, 1000);
   glutCreateWindow("Bouncing Ball");
   init();
   glutDisplayFunc(Display);
   glutReshapeFunc(reshape);
+  glutKeyboardFunc(keyboard);
+  glutSpecialFunc(specialKeyboard);
   glutMainLoop();
 
   return 1;
