@@ -1,25 +1,21 @@
-//
+//-------------------------------------------------------------------------------------
 //  main.cpp
 //  PongOpenGL
-//
 //  Created by juan gabriel lopez on 20/03/24.
-//
-
-//Example2_4.cpp : A bouncing ball
-
-#include <GLUT/glut.h>//configuracion Para MacOS usando Xcode agregar opengl y glut a las Build Phases en xcode
-//#include <windows.h> //the windows include file, required by all windows applications
-//#include <GL/glut.h> //the glut file for windows operations
-                     // it also includes gl.h and glu.h for the openGL library calls
+//-------------------------------------------------------------------------------------
+#include <GLUT/glut.h>
 #include <math.h>
 #include <string>
 
-#define PI 3.1415926535898
 
-double xpos, ypos, ydir, xdir;         // x and y position for house to be drawn
-double sx, sy, squash;          // xy scale factors
+//Screen values
+int screenHeight=1000;
+int screenWidth=1500;
+
+double sx, sy, squash;        // xy scale factors
 double rot, rdir;             // rotation
-int SPEED = 50;        // speed of timer call back in msecs
+//Global Vars----------------------------------------------------------------------------
+int SPEED = 60;        // speed of timer call back in msecs
 GLfloat T1[16] = {1.,0.,0.,0.,\
                   0.,1.,0.,0.,\
                   0.,0.,1.,0.,\
@@ -32,33 +28,29 @@ GLfloat T[16] = {1.,0.,0.,0.,\
                  0., 1., 0., 0.,\
                  0.,0.,1.,0.,\
                  0.,0.,0.,1.};
-
-
-
 #define PI 3.1415926535898
+
+
+//ball
+GLfloat RadiusOfBall = 15.;
+double xpos, ypos, ydir, xdir;// x and y position for house to be drawn
 GLint circle_points = 100;
-float rectX = 5.0f; // Posición inicial en X del rectángulo
-float rectY = 50.0f; // Posición inicial en Y del rectángulo
+
+//paletas
+float heightPaleta=12.0f;
+float widthPaleta=2.0f;
+float posPaleta1X = 5.0f;//posiciones iniciales paleta 1 y 2
+float posPaleta1Y = 50.0f;
+float posPaleta2X = 152.0f;
+float posPaleta2Y = 50.0f;
 
 
-
-void drawRectangle(GLint x, GLint y) {
-    glColor3f(1.0f, 1.0f, 1.0f); // Color blanco
-    glBegin(GL_QUADS);
-    glVertex2f(rectX, rectY);
-    glVertex2f(rectX + 2.0f, rectY);
-    glVertex2f(rectX + 2.0f, rectY + 12.0f);
-    glVertex2f(rectX, rectY + 12.0f);
-    glEnd();
-}
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-        case 'w': // Mover hacia arriba
-            rectY += 10.0f;
+        case 'w':posPaleta1Y += 10.0f;
             break;
-        case 's': // Mover hacia abajo
-            rectY -= 10.0f;
+        case 's':posPaleta1Y -= 10.0f;
             break;
         default:
             break;
@@ -66,22 +58,20 @@ void keyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+
+
 void specialKeyboard(int key, int x, int y) {
     switch (key) {
-        case GLUT_KEY_UP: // Flecha hacia arriba
-            rectY += 10.0f;
+        case GLUT_KEY_UP:posPaleta2Y += 10.0f;
             break;
-        case GLUT_KEY_DOWN: // Flecha hacia abajo
-            rectY -= 10.0f;
-            break;
-        case GLUT_KEY_RIGHT: // Flecha hacia la derecha
-            rectX += 10.0f;
+        case GLUT_KEY_DOWN:posPaleta2Y -= 10.0f;
             break;
         default:
             break;
     }
     glutPostRedisplay();
 }
+
 
 
 void MyCircle2f(GLfloat centerx, GLfloat centery, GLfloat radius){
@@ -95,13 +85,15 @@ void MyCircle2f(GLfloat centerx, GLfloat centery, GLfloat radius){
   glEnd();
 }
 
-GLfloat RadiusOfBall = 15.;
+
+
 // Draw the ball, centered at the origin
 void draw_ball() {
   glColor3f(0.0,1.0,0.0);
-  MyCircle2f(0.,0.,5.0);
-  
+  MyCircle2f(0.,0.,RadiusOfBall);
 }
+
+
 
 void drawScore(GLint scorep1,GLint scorep2){
     glColor3f(1.0f, 1.0f, 1.0f); // Establecer el color a blanco
@@ -117,11 +109,23 @@ void drawScore(GLint scorep1,GLint scorep2){
     for (const char *c = textss; *c != '\0'; c++) {
       glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
     }
-    glFlush(); // Asegurarse de que se renderice
-      
+    glFlush();
 }
 
-void drawFixedText() {
+
+void drawPaleta(float x, float y) {
+    glColor3f(1.0f, 1.0f, 1.0f); // Color blanco
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + widthPaleta, y);
+    glVertex2f(x + widthPaleta, y + heightPaleta);
+    glVertex2f(x, y + heightPaleta);
+    glEnd();
+}
+
+
+
+void drawPaletasAndScore() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -129,19 +133,15 @@ void drawFixedText() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
+    
     drawScore(3,5);
-    drawRectangle(rectX,rectY);
+    drawPaleta(posPaleta1X,posPaleta1Y);
+    drawPaleta(posPaleta2X,posPaleta2Y);
+ 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-    
-
-    
-    //glClear(GL_COLOR_BUFFER_BIT);
-    //drawRectangle();
-    //glFlush();
-    
 }
 
 
@@ -149,79 +149,50 @@ void drawFixedText() {
 void Display(void)
 {
   // swap the buffers
-  glutSwapBuffers();
-
-  //clear all pixels with the specified clear color
+  glutSwapBuffers();//clear all pixels with the specified clear color
   glClear(GL_COLOR_BUFFER_BIT);
   // 160 is max X value in our world
-    // Define X position of the ball to be at center of window
-    xpos = 80.;
+  // Define X position of the ball to be at center of window
+  xpos = 80.;
      
-    // Shape has hit the ground! Stop moving and start squashing down and then back up
-    if (ypos == RadiusOfBall && ydir == -1  ) {
+   // Shape has hit the ground! Stop moving and start squashing down and then back up
+  if (ypos == RadiusOfBall && ydir == -1  ) {
         sy = sy*squash ;
-        
         if (sy < 0.8)
-            // reached maximum suqash, now unsquash back up
-            squash = 1.1;
+            squash = 1.1;// reached maximum suqash, now unsquash back up
         else if (sy > 1.) {
-            // reset squash parameters and bounce ball back upwards
-            sy = 1.;
+            sy = 1.; // reset squash parameters and bounce ball back upwards
             squash = 0.9;
             ydir = 1;
         }
         sx = 1./sy;
-    }
-    // 120 is max Y value in our world
-    // set Y position to increment 1.5 times the direction of the bounce
-    else {
-    ypos = ypos+ydir *1.5 - (1.-sy)*RadiusOfBall;
-    // If ball touches the top, change direction of ball downwards
-      if (ypos == 120-RadiusOfBall)
-        ydir = -1;
-    // If ball touches the bottom, change direction of ball upwards
-      else if (ypos <RadiusOfBall)
-        ydir = 1;
-    }
-  
-/*  //reset transformation state
-  glLoadIdentity();
-  
-  // apply translation
-  glTranslatef(xpos,ypos, 0.);
+   }
+    // 120 is max Y value in our world set Y position to increment 1.5 times the direction of the bounce
+   else {
+      ypos = ypos+ydir *1.5 - (1.-sy)*RadiusOfBall;
+      if (ypos == 120-RadiusOfBall)    // If ball touches the top, change direction of ball downwards
+         ydir = -1;
+      else if (ypos <RadiusOfBall)    // If ball touches the bottom, change direction of ball upwards
+         ydir = 1;
+   }
 
-  // Translate ball back to center
-  glTranslatef(0.,-RadiusOfBall, 0.);
-  // Scale the ball about its bottom
-  glScalef(sx,sy, 1.);
-  // Translate ball up so bottom is at the origin
-  glTranslatef(0.,RadiusOfBall, 0.);
-  // draw the ball
-  draw_ball();
-*/
- 
   //Translate the bouncing ball to its new position
   T[12]= xpos;
   T[13] = ypos;
   glLoadMatrixf(T);
-
-  T1[13] = -RadiusOfBall;
-  // Translate ball back to center
+    
+  T1[13] = -RadiusOfBall;// Translate ball back to center
   glMultMatrixf(T1);
   S[0] = sx;
-  S[5] = sy;
-  // Scale the ball about its bottom
+  S[5] = sy;// Scale the ball about its bottom
   glMultMatrixf(S);
-  T1[13] = RadiusOfBall;
-  // Translate ball up so bottom is at the origin
+  T1[13] = RadiusOfBall;// Translate ball up so bottom is at the origin
   glMultMatrixf(T1);
   
   draw_ball();
-
+  drawPaletasAndScore();
+    
   glutPostRedisplay();
-
-  drawFixedText();
-
 }
 
 
@@ -234,41 +205,32 @@ void reshape (int w, int h)
    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
    glMatrixMode (GL_PROJECTION);
    glLoadIdentity ();
-
    // keep our logical coordinate system constant
    gluOrtho2D(0.0, 160.0, 0.0, 120.0);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity ();
-
 }
 
 
 void init(void){
-  //set the clear color to be white
-  glClearColor(0.0,0.0,0.0,0.0);
-  // initial position set to 0,0
+  glClearColor(0.0,0.0,0.0,0.0);//set the clear color to be white. initial position set to 0,0
   xpos = 60; ypos = RadiusOfBall; xdir = 1; ydir = 1;
   sx = 1.; sy = 1.; squash = 0.9;
   rot = 0;
-    
-  
-
 }
 
 
 int main(int argc, char* argv[])
 {
-
   glutInit( & argc, argv );
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize (1500, 1000);
+  glutInitWindowSize (screenWidth, screenHeight);
   glutCreateWindow("Bouncing Ball");
   init();
   glutDisplayFunc(Display);
   glutReshapeFunc(reshape);
-  glutKeyboardFunc(keyboard);
-  glutSpecialFunc(specialKeyboard);
+  glutKeyboardFunc(keyboard);//leer del teclado
+  glutSpecialFunc(specialKeyboard);//leer del teclado
   glutMainLoop();
-
   return 1;
 }
