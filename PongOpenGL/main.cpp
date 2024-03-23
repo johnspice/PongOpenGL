@@ -11,7 +11,7 @@
 
 //Screen values
 int screenHeight=1000;
-int screenWidth=1500;
+int screenWidth=1600;
 
 bool tope=false;
 
@@ -35,19 +35,37 @@ GLfloat T[16] = {1.,0.,0.,0.,\
 
 
 //ball
-GLfloat RadiusOfBall = 5.;//default 15
+GLfloat RadiusOfBall = 2.5;//default 15
 double xpos, ypos, ydir, xdir;// x and y position for house to be drawn
 GLint circle_points = 100;
 
 //paletas
-float heightPaleta=12.0f;
+float heightPaleta=20.0f;//15
 float widthPaleta=2.0f;
-float posPaleta1X = 5.0f;//posiciones iniciales paleta 1 y 2
+float posPaleta1X = 12.0f;//posiciones iniciales paleta 1 y 2
 float posPaleta1Y = 50.0f;
-float posPaleta2X = 152.0f;
+float posPaleta2X = 145.0f;
 float posPaleta2Y = 50.0f;
 
 
+void printLogs(const std::string&TAG,const std::string& ms){
+    std::cout <<TAG<<":"<<ms  << std::endl;
+}
+
+void checkColission(){
+    //printLogs("checkcolission","paletax:"+ std::to_string(posPaleta2X));
+    //printLogs("checkcolission","xpos:"+ std::to_string(xpos));
+    //printLogs("checkcolission","ypos:"+ std::to_string(ypos));
+    //printLogs("checkcolission","yposPaleta:"+ std::to_string(posPaleta2Y));
+    if(xpos<posPaleta1X+RadiusOfBall+widthPaleta && ypos<posPaleta1Y+heightPaleta+RadiusOfBall && ypos>posPaleta1Y-RadiusOfBall){
+        printLogs("checkcolission","paleta1");
+        xdir=+1;
+    }
+    if(xpos>posPaleta2X-RadiusOfBall && ypos<posPaleta2Y+heightPaleta+RadiusOfBall && ypos>posPaleta2Y-RadiusOfBall){
+        printLogs("checkcolission","paleta2");
+        xdir=-1;
+    }
+}
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
@@ -124,6 +142,7 @@ void drawPaleta(float x, float y) {
     glVertex2f(x + widthPaleta, y + heightPaleta);
     glVertex2f(x, y + heightPaleta);
     glEnd();
+    
 }
 
 
@@ -211,9 +230,11 @@ void Display(void)
   
   draw_ball();
   drawPaletasAndScore();
-    
+  checkColission();
   glutPostRedisplay();
 }
+
+
 
 
 
