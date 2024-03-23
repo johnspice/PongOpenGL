@@ -6,11 +6,14 @@
 #include <GLUT/glut.h>
 #include <math.h>
 #include <string>
+#include <iostream>
 
 
 //Screen values
 int screenHeight=1000;
 int screenWidth=1500;
+
+bool tope=false;
 
 double sx, sy, squash;        // xy scale factors
 double rot, rdir;             // rotation
@@ -32,7 +35,7 @@ GLfloat T[16] = {1.,0.,0.,0.,\
 
 
 //ball
-GLfloat RadiusOfBall = 15.;
+GLfloat RadiusOfBall = 5.;//default 15
 double xpos, ypos, ydir, xdir;// x and y position for house to be drawn
 GLint circle_points = 100;
 
@@ -148,17 +151,19 @@ void drawPaletasAndScore() {
 
 void Display(void)
 {
+    
   // swap the buffers
   glutSwapBuffers();//clear all pixels with the specified clear color
   glClear(GL_COLOR_BUFFER_BIT);
   // 160 is max X value in our world
   // Define X position of the ball to be at center of window
-  xpos = 80.;
+  //xpos = 80.;
      
+   
    // Shape has hit the ground! Stop moving and start squashing down and then back up
   if (ypos == RadiusOfBall && ydir == -1  ) {
         sy = sy*squash ;
-        if (sy < 0.8)
+        if (sy < 0.8)//0.8 defaul
             squash = 1.1;// reached maximum suqash, now unsquash back up
         else if (sy > 1.) {
             sy = 1.; // reset squash parameters and bounce ball back upwards
@@ -169,11 +174,24 @@ void Display(void)
    }
     // 120 is max Y value in our world set Y position to increment 1.5 times the direction of the bounce
    else {
+       
       ypos = ypos+ydir *1.5 - (1.-sy)*RadiusOfBall;
-      if (ypos == 120-RadiusOfBall)    // If ball touches the top, change direction of ball downwards
+      xpos = xpos+xdir *1.5 - (1.-sx)*RadiusOfBall;
+       
+       
+      if (ypos > 120-RadiusOfBall)    // If ball touches the top, change direction of ball downwards
          ydir = -1;
-      else if (ypos <RadiusOfBall)    // If ball touches the bottom, change direction of ball upwards
+      else if (ypos <=RadiusOfBall)    // If ball touches the bottom, change direction of ball upwards
          ydir = 1;
+       
+       
+       if (xpos > 157-RadiusOfBall) {   // If ball touches the top, change direction of ball downwards
+           xdir = -1;
+           tope=true;
+       }
+       else if (xpos <=RadiusOfBall)    // If ball touches the bottom, change direction of ball upwards
+          xdir = 1;
+       
    }
 
   //Translate the bouncing ball to its new position
@@ -188,6 +206,8 @@ void Display(void)
   glMultMatrixf(S);
   T1[13] = RadiusOfBall;// Translate ball up so bottom is at the origin
   glMultMatrixf(T1);
+     
+    
   
   draw_ball();
   drawPaletasAndScore();
@@ -214,7 +234,8 @@ void reshape (int w, int h)
 
 void init(void){
   glClearColor(0.0,0.0,0.0,0.0);//set the clear color to be white. initial position set to 0,0
-  xpos = 60; ypos = RadiusOfBall; xdir = 1; ydir = 1;
+  xpos = 60; ypos = RadiusOfBall; 
+  xdir = 1; ydir = 1;
   sx = 1.; sy = 1.; squash = 0.9;
   rot = 0;
 }
