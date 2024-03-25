@@ -3,6 +3,8 @@
 //  PongOpenGL
 //  Created by juan gabriel lopez on 20/03/24.
 //-------------------------------------------------------------------------------------
+
+
 #include <GLUT/glut.h>
 #include <math.h>
 #include <string>
@@ -13,7 +15,7 @@
 int screenHeight=1000;
 int screenWidth=1600;
 
-bool tope=false;
+
 
 double sx, sy, squash;        // xy scale factors
 double rot, rdir;             // rotation
@@ -46,6 +48,8 @@ float posPaleta1X = 12.0f;//posiciones iniciales paleta 1 y 2
 float posPaleta1Y = 50.0f;
 float posPaleta2X = 145.0f;
 float posPaleta2Y = 50.0f;
+int scoreP1=0;
+int scoreP2=0;
 
 
 void printLogs(const std::string&TAG,const std::string& ms){
@@ -58,11 +62,11 @@ void checkColission(){
     //printLogs("checkcolission","ypos:"+ std::to_string(ypos));
     //printLogs("checkcolission","yposPaleta:"+ std::to_string(posPaleta2Y));
     if(xpos<posPaleta1X+RadiusOfBall+widthPaleta && ypos<posPaleta1Y+heightPaleta+RadiusOfBall && ypos>posPaleta1Y-RadiusOfBall){
-        printLogs("checkcolission","paleta1");
+        //printLogs("checkcolission","paleta1");
         xdir=+1;
     }
     if(xpos>posPaleta2X-RadiusOfBall && ypos<posPaleta2Y+heightPaleta+RadiusOfBall && ypos>posPaleta2Y-RadiusOfBall){
-        printLogs("checkcolission","paleta2");
+        //printLogs("checkcolission","paleta2");
         xdir=-1;
     }
 }
@@ -165,7 +169,6 @@ void drawMidleLine() {
     glVertex2f(76 + 0.8, 120);
     glVertex2f(76,  120);
     glEnd();
-    
 }
 
 
@@ -178,12 +181,10 @@ void drawPaletasAndScore() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-    
-    drawScore(3,5);
+    drawMidleLine();
+    drawScore(scoreP1,scoreP2);
     drawPaleta(posPaleta1X,posPaleta1Y);
     drawPaleta(posPaleta2X,posPaleta2Y);
-    drawMidleLine();
- 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -194,13 +195,12 @@ void drawPaletasAndScore() {
 
 void Display(void)
 {
-    
+  glClearColor(0.0,0.0,0.0,0.0);//set the clear color to be white. initial position set to 0,0
   // swap the buffers
   glutSwapBuffers();//clear all pixels with the specified clear color
   glClear(GL_COLOR_BUFFER_BIT);
   // 160 is max X value in our world
   // Define X position of the ball to be at center of window
-  //xpos = 80.;
      
    
    // Shape has hit the ground! Stop moving and start squashing down and then back up
@@ -230,10 +230,18 @@ void Display(void)
        
        if (xpos > 157-RadiusOfBall) {   // If ball touches the top, change direction of ball downwards
            xdir = -1;
-           tope=true;
+           //glClearColor(1.0,0.0,0.0,0.0);//set the clear color to be white. initial position set to 0,0
+           //glClear(GL_COLOR_BUFFER_BIT);
+           //printLogs("checkcolission","----------");
+           scoreP1=scoreP1+1;
        }
-       else if (xpos <=RadiusOfBall)    // If ball touches the bottom, change direction of ball upwards
-          xdir = 1;
+       else if (xpos <=RadiusOfBall) {   // If ball touches the bottom, change direction of ball upwards
+           xdir = 1;
+           //glClearColor(1.0,0.0,0.0,0.0);
+           //glClear(GL_COLOR_BUFFER_BIT);
+           //printLogs("checkcolission","+++++");
+           scoreP2=scoreP2+1;
+       }
        
    }
 
@@ -252,9 +260,10 @@ void Display(void)
      
     
   
-  draw_ball();
+  
   drawPaletasAndScore();
   checkColission();
+  draw_ball();
   glutPostRedisplay();
 }
 
