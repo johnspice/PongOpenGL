@@ -69,9 +69,15 @@ void checkColission(){
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
-        case 'w':posPaleta1Y += 10.0f;
+        case 'w':
+            if(posPaleta1Y<100){
+                posPaleta1Y += 15.0f;
+            }
             break;
-        case 's':posPaleta1Y -= 10.0f;
+        case 's':
+            if(posPaleta1Y>0){
+                posPaleta1Y -= 15.0f;
+            }
             break;
         default:
             break;
@@ -83,9 +89,15 @@ void keyboard(unsigned char key, int x, int y) {
 
 void specialKeyboard(int key, int x, int y) {
     switch (key) {
-        case GLUT_KEY_UP:posPaleta2Y += 10.0f;
+        case GLUT_KEY_UP:
+            if(posPaleta2Y<100){
+                posPaleta2Y += 15.0f;
+            }
             break;
-        case GLUT_KEY_DOWN:posPaleta2Y -= 10.0f;
+        case GLUT_KEY_DOWN:
+            if(posPaleta2Y>0){
+                posPaleta2Y -= 15.0f;
+            }
             break;
         default:
             break;
@@ -145,6 +157,17 @@ void drawPaleta(float x, float y) {
     
 }
 
+void drawMidleLine() {
+    glColor3f(0.1f, 0.1f, 0.1f); // Color blanco
+    glBegin(GL_QUADS);
+    glVertex2f(76, 0);
+    glVertex2f(76 + 0.8, 0);
+    glVertex2f(76 + 0.8, 120);
+    glVertex2f(76,  120);
+    glEnd();
+    
+}
+
 
 
 void drawPaletasAndScore() {
@@ -159,6 +182,7 @@ void drawPaletasAndScore() {
     drawScore(3,5);
     drawPaleta(posPaleta1X,posPaleta1Y);
     drawPaleta(posPaleta2X,posPaleta2Y);
+    drawMidleLine();
  
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
