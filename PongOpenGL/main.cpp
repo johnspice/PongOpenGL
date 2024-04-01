@@ -4,8 +4,9 @@
 //  Created by juan gabriel lopez on 20/03/24.
 //-------------------------------------------------------------------------------------
 
-
-#include <GLUT/glut.h>
+//#include <windows.h>  //Windows
+//#include <GL/glut.h>  //Ubuntu 
+#include <GLUT/glut.h>  //MacOS
 #include <math.h>
 #include <string>
 #include <iostream>
