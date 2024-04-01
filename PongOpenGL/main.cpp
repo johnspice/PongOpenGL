@@ -14,13 +14,11 @@
 //Screen values
 int screenHeight=1000;
 int screenWidth=1600;
-
-
-
 double sx, sy, squash;        // xy scale factors
 double rot, rdir;             // rotation
 //Global Vars----------------------------------------------------------------------------
-int SPEED = 60;        // speed of timer call back in msecs
+int velocidad=1;//0 es la velocidad por default para mas lento aumentar esta variable
+int contador=0;
 GLfloat T1[16] = {1.,0.,0.,0.,\
                   0.,1.,0.,0.,\
                   0.,0.,1.,0.,\
@@ -34,13 +32,10 @@ GLfloat T[16] = {1.,0.,0.,0.,\
                  0.,0.,1.,0.,\
                  0.,0.,0.,1.};
 #define PI 3.1415926535898
-
-
 //ball
 GLfloat RadiusOfBall = 2.5;//default 15
 double xpos, ypos, ydir, xdir;// x and y position for house to be drawn
 GLint circle_points = 100;
-
 //paletas
 float heightPaleta=20.0f;//15
 float widthPaleta=2.0f;
@@ -62,11 +57,11 @@ void checkColission(){
     //printLogs("checkcolission","ypos:"+ std::to_string(ypos));
     //printLogs("checkcolission","yposPaleta:"+ std::to_string(posPaleta2Y));
     if(xpos<posPaleta1X+RadiusOfBall+widthPaleta && ypos<posPaleta1Y+heightPaleta+RadiusOfBall && ypos>posPaleta1Y-RadiusOfBall){
-        //printLogs("checkcolission","paleta1");
+        printLogs("checkcolission","paleta1");
         xdir=+1;
     }
     if(xpos>posPaleta2X-RadiusOfBall && ypos<posPaleta2Y+heightPaleta+RadiusOfBall && ypos>posPaleta2Y-RadiusOfBall){
-        //printLogs("checkcolission","paleta2");
+        printLogs("checkcolission","paleta2");
         xdir=-1;
     }
 }
@@ -218,8 +213,13 @@ void Display(void)
     // 120 is max Y value in our world set Y position to increment 1.5 times the direction of the bounce
    else {
        
-      ypos = ypos+ydir *1.5 - (1.-sy)*RadiusOfBall;
-      xpos = xpos+xdir *1.5 - (1.-sx)*RadiusOfBall;
+       if(contador==velocidad){
+           ypos = ypos+ydir *1.5 - (1.-sy)*RadiusOfBall;
+           xpos = xpos+xdir *1.5 - (1.-sx)*RadiusOfBall;
+           contador=0;
+       }else{
+           contador=contador+1;
+       }
        
        
       if (ypos > 120-RadiusOfBall)    // If ball touches the top, change direction of ball downwards
@@ -264,6 +264,7 @@ void Display(void)
   drawPaletasAndScore();
   checkColission();
   draw_ball();
+    
   glutPostRedisplay();
 }
 
