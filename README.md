@@ -1,5 +1,5 @@
 # PongOpenGL
-juego basico del pong usando openGl y c++ .<br>
+juego basico del pong usando openGl y c++. se usan las teclas w,s up and down. .<br>
 
 ![GitHub Logo](/imagenes/window.png)
 
